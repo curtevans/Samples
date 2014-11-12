@@ -1,0 +1,111 @@
+// An Actionscript object from the real time auction client
+// for the bid setting action
+
+
+package com.towlib
+{
+	import flash.display.*;
+	import flash.display.LoaderInfo;
+	import flash.system.LoaderContext;
+	import flash.display.Sprite;
+	import flash.events.*;
+	import com.towlib.fingerclass;
+
+
+	public class bidpanelclass extends Sprite
+	{
+		var fingerobj:DisplayObject=null;
+		var sym=new bidpanelsym();
+		var powerflag:Boolean=false;
+		var enabled:Boolean=false;
+
+		var blinkfinger=new fingerclass();
+
+		public function bidpanelclass()
+		{
+			sym.bidbutton1.addEventListener(MouseEvent.CLICK,setbid);
+			sym.bidbutton2.addEventListener(MouseEvent.CLICK,setbid);
+			sym.bidbutton3.addEventListener(MouseEvent.CLICK,setbid);
+			sym.bidbutton4.addEventListener(MouseEvent.CLICK,setbid);
+			sym.placebid.addEventListener(MouseEvent.CLICK,bidhandler);
+			addChild(sym);
+			blinkfinger.x=200;
+			blinkfinger.y=330;
+			fingerobj=addChild(blinkfinger);
+		}
+       
+	    public function enable()
+		{
+			enabled=true;
+		}
+		
+	    public function disable()
+		{
+			enabled=false;
+		}
+
+		public function setincs(x:XML)
+		{ 		
+			sym.bidinc1.text=x.bidinc1;
+			sym.bidinc2.text=x.bidinc2;
+			sym.bidinc3.text=x.bidinc3;
+			sym.bidinc4.text=x.bidinc4;
+		}
+		
+		public function reset()
+		{
+		  // Clear bid state
+			sym.yourbid.text=0;
+			sym.bidamt.text=0;
+		}
+		
+		public function checkflag():Boolean
+		{
+		 return powerflag;
+		}
+		
+		public function setflag()
+		{
+		 powerflag=false;
+		}
+		
+		public function getbid()
+		{
+			return sym.bidamt.text;
+		}
+		
+		public function setbid(e:MouseEvent)
+		{
+			if (enabled)
+			{
+				powerflag=false;
+				if (e.target.name=='bidbutton1')
+				{
+					sym.bidamt.text=sym.bidinc1.text;
+				}
+				if (e.target.name=='bidbutton2')
+				{
+
+					sym.bidamt.text=sym.bidinc2.text;
+				}
+				if (e.target.name=='bidbutton3')
+				{
+					sym.bidamt.text=sym.bidinc3.text;
+				}
+				if (e.target.name=='bidbutton4')
+				{
+					sym.bidamt.text=sym.bidinc4.text;
+					powerflag=true;
+				}
+				blinkfinger.putfinger();
+			}
+		}
+		
+		public function bidhandler(e:MouseEvent)
+		{
+			sym.yourbid.text=sym.bidamt.text;
+			blinkfinger.clearfinger();
+		}
+
+	}
+}

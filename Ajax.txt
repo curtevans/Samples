@@ -1,0 +1,74 @@
+//A simple AJAX program to fetch vehicle data from a third party api
+
+function loadXMLDoc(url) 
+{
+ //Standard Ajax call
+	req = false;
+    if(window.XMLHttpRequest) {
+    	try {
+			req = new XMLHttpRequest();
+        } catch(e) {
+			req = false;
+        }
+
+    } else if(window.ActiveXObject) {
+       	try {
+        	req = new ActiveXObject("Msxml2.XMLHTTP");
+      	} catch(e) {
+        	try {
+          		req = new ActiveXObject("Microsoft.XMLHTTP");
+        	} catch(e) {
+          		req = false;
+        	}
+		}
+    }
+	if(req) {
+		req.onreadystatechange = processReqChange;
+		req.open("GET", url, true);
+		req.send("");
+	}
+}
+
+
+function fixtrans(s)
+{
+// Clip last bit of transmission detail
+ return s.replace(/\/.*$/,'');
+}
+
+function processReqChange()
+ {
+//This function presets the form from the XML data returned by the vehicle vin decoder.
+  var i;
+  var s=new String();  
+    if (req.readyState == 4) {
+
+        if (req.status == 200)
+		{
+            response=req.responseXML;
+
+  		items = response.getElementsByTagName("ITEM");
+ 		for (i = 0; i < items.length; i++)
+ 		{
+ 		 if (items[i].getAttribute('name')=='Transmission/MfgCode')
+		 {document.info.transmission.value=fixtrans(items[i].getAttribute('value'));}
+ 		 if (items[i].getAttribute('name')=='Engine Type')
+		 {document.info.engine.value=items[i].getAttribute('value');}
+ 		 if (items[i].getAttribute('name')=='Model Year')
+		 {document.info.year.value=items[i].getAttribute('value');}
+ 		 if (items[i].getAttribute('name')=='Make')
+		 {document.info.make.value=items[i].getAttribute('value');}		
+ 		 if (items[i].getAttribute('name')=='Model')
+		 {document.info.model.value=items[i].getAttribute('value');}
+		 s+=	items[i].getAttribute('name')+'='+items[i].getAttribute('value')+';';  	 		 
+		}
+        } 
+    }
+}
+
+function decodevin(vin)
+{
+ loadXMLDoc("/cgi/vinpower.pl?type=BASIC&vin="+vin);
+
+
+}

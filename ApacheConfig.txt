@@ -1,0 +1,36 @@
+# The apache virtual host configuration for langeauction.com
+
+<VirtualHost 139.146.143.252>
+  Documentroot /home/httpd/lange/web
+  HostNameLookups off
+  UseCanonicalName off
+  Scriptalias /cgi/ /home/httpd/lange/cgi/
+  ErrorLog /home/httpd/lange/logs/error_log
+  CustomLog /home/httpd/lange/logs/access_log combined
+  ErrorDocument 404 /index.html
+  ServerName www.langeauction.com
+  ServerAlias langeauction.com
+  <Directory /home/httpd/lange/web/>
+    Options +Includes
+  </Directory>
+
+ScriptAlias /langeauction/cgi/ /home/httpd/lange/cgi/
+#This is the cloaking code that makes perl scripts appear to be HTML to the outside world
+
+RewriteEngine On
+RewriteLog /home/httpd/lange/logs/rewrite.log
+RewriteLogLevel 0
+RewriteCond %{HTTP_HOST}   !^www.langeauction\.com [NC]
+RewriteCond %{HTTP_HOST}   !^$
+RewriteRule ^/(.*)         http://www.langeauction.com/$1 [L,R]
+RewriteRule ^/gallery/([0-9]{9})\.html$ /home/httpd/lange/cgi/showgallery.pl?gallery=$1 [T=application/x-httpd-cgi]
+RewriteRule ^/auctions/([0-9]{6})*\.html$ /home/httpd/lange/cgi/listgallery.pl?auction=$1 [T=application/x-httpd-cgi]
+RewriteRule ^/showacar/([0-9]{6})([0-9]{6})([0-9]{7})*\.html$ /home/httpd/lange/cgi/showcar.pl?auction=$1&lot=$2&gallery=$3 [T=appli
+cation/x-httpd-cgi]
+<Directory /home/httpd/lange/cgi/>
+  Options +ExecCGI
+        AllowOverride All
+        Order allow,deny
+        Allow from all
+</Directory>
+</VirtualHost>
